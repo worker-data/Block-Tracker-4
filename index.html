@@ -1,0 +1,439 @@
+<!doctype html><html lang="ja"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>BLOCK TRACKER</title><style>
+:root{--navy:#263c54;--green:#24766b;--bg:#f1f4f7;--line:#dce3e9}*{box-sizing:border-box}body{margin:0;background:var(--bg);color:#243345;font:15px/1.65 -apple-system,BlinkMacSystemFont,'Hiragino Sans','Yu Gothic',sans-serif}main{max-width:780px;margin:auto;padding:20px 16px 60px}header{padding:22px 0 18px}h1{font-size:29px;letter-spacing:2px;margin:0;line-height:1.15}h2{font-size:19px;margin:0 0 14px}h3{font-size:16px;margin:0 0 12px}p{margin:6px 0}small,.muted{color:#657585;font-size:12px}.brand{display:flex;gap:14px;align-items:center}.logo{background:var(--navy);color:white;border-radius:14px;padding:12px;font-size:26px}nav{display:grid;grid-template-columns:repeat(4,1fr);gap:6px;margin-bottom:16px}button,.file{font:inherit;cursor:pointer;border:1px solid var(--line);border-radius:9px;padding:11px 15px;background:white;color:var(--navy);font-weight:600}nav button{font-size:13px;padding:12px 4px}button.active,button.primary{background:var(--navy);color:white;border-color:var(--navy)}button:disabled{opacity:.5;cursor:not-allowed}.card{background:white;border:1px solid var(--line);border-radius:14px;padding:19px;margin-bottom:14px}.section{border-top:1px solid var(--line);padding-top:18px;margin-top:18px}.grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}.field label{display:block;font-size:13px;font-weight:600;margin-bottom:4px}input:not([type=checkbox]):not([type=range]),select,textarea{font:inherit;font-size:16px;width:100%;min-width:0;padding:10px;border:1px solid #cbd5df;border-radius:8px;background:#fff;color:inherit}textarea{resize:vertical;min-height:75px}input[type=range]{width:100%;accent-color:var(--green)}input[type=checkbox]{width:19px;height:19px;accent-color:var(--green)}.check{display:flex;align-items:center;gap:9px;padding:6px 0}.metric{padding:13px;background:#f3f6f8;border-radius:10px;min-width:0}.metric small{display:block}.metric strong{font-size:25px;font-variant-numeric:tabular-nums;overflow-wrap:anywhere}.bad{color:#a24435}.good{color:var(--green)}.full{width:100%}.notice{background:#e9f1f5;border-radius:8px;padding:10px 13px;margin-bottom:14px;font-size:13px}.warn{background:#fff4e7}.actions{display:flex;gap:8px;flex-wrap:wrap;margin-top:12px}.scroll{overflow:auto}table{border-collapse:collapse;width:100%;white-space:nowrap;font-size:13px}td,th{padding:9px;border-bottom:1px solid var(--line);text-align:left}th{background:#f1f4f7}.chart{margin:15px 0}.chart svg{width:100%;height:auto;display:block}.legend{display:flex;gap:14px;justify-content:center;font-size:12px}.dot{display:inline-block;width:10px;height:10px;border-radius:2px;margin-right:5px}.hidden,[hidden]{display:none!important}.status{font-size:13px;color:var(--green);min-height:20px}.entry{border-top:1px solid var(--line);padding:12px 0;white-space:pre-wrap;overflow-wrap:anywhere}footer{text-align:center;font-size:12px;color:#657585;margin:24px 0} @media(max-width:400px){main{padding:12px 10px 40px}.card{padding:14px}.grid{gap:8px}.metric strong{font-size:21px}h1{font-size:24px}nav button{font-size:11px}} @media(prefers-reduced-motion:no-preference){button:hover{filter:brightness(.96)}}
+
+/* Presentation-only refinement */
+:root{--navy:#20394d;--green:#176c60;--bg:#f3f6f7;--line:#dce5e8;--ink:#203448}
+body{color:var(--ink);font-size:15px;line-height:1.7;background:linear-gradient(180deg,#e8eff2 0,#f3f6f7 320px)}
+main{max-width:1000px;padding:28px 24px 60px}
+header{padding:27px 30px;margin-bottom:17px;border-radius:20px;background:linear-gradient(120deg,#20394d,#264f60);color:white;box-shadow:0 8px 24px #20394d16}
+header .brand{gap:17px}header .logo{background:#ffffff18;border:1px solid #ffffff35;border-radius:15px;width:57px;height:57px;display:grid;place-items:center;padding:0}header h1{font-size:30px;letter-spacing:2.2px}header p{color:#e5eff2;margin:5px 0 0}header small{color:#c1d5dd;font-size:12px}
+#storage{background:#e5f1ed;color:#245d53;border:1px solid #c7e1d8;border-radius:10px;padding:9px 15px;margin-bottom:14px}#storage.warn{background:#fff4e7;color:#874d16;border-color:#efd6b6}
+nav{background:white;border:1px solid var(--line);padding:5px;gap:5px;border-radius:13px;box-shadow:0 3px 12px #20394d06;margin-bottom:12px}nav button{border:0;border-radius:9px;font-size:14px;min-height:46px;color:#506375}nav button.active{background:var(--navy);color:#fff;box-shadow:0 2px 5px #20394d22}
+.card{border-radius:18px;padding:27px 30px;margin-bottom:20px;box-shadow:0 4px 18px #20394d08}
+h2{font-size:23px;letter-spacing:.02em;margin-bottom:4px}h3{font-size:17px;letter-spacing:.02em;margin-bottom:20px}h4{font-size:14px;color:var(--green);margin:26px 0 13px;padding:0 0 0 10px;border-left:3px solid #72ab9e;line-height:1.4}
+.section{margin-top:27px;padding-top:24px;border-color:var(--line)}#recordForm>.section>h3{background:#edf3f5;color:var(--navy);border-radius:9px;padding:12px 15px;margin-bottom:20px}
+.grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:18px 22px;align-items:start}.field{min-width:0}.field label{font-size:14px;color:#344c5d;margin-bottom:7px;font-weight:650}.field small{display:block;margin-top:5px;line-height:1.5;color:#586b7b}
+input:not([type=checkbox]):not([type=range]),select,textarea{border:1px solid #cbd7dd;background:#fcfdfe;border-radius:9px;min-height:46px;padding:10px 12px;transition:border-color .15s,box-shadow .15s}input:focus,select:focus,textarea:focus{outline:2px solid #258478;outline-offset:1px;border-color:#258478}input::placeholder,textarea::placeholder{color:#81909b}textarea{min-height:96px}
+#work+.field,#results+.field{padding:14px 17px;margin-top:17px;background:#edf6f3;border:1px solid #d2e6de;border-radius:11px}output#actualOutput,output#breakOutput,output#completedOutput{display:block;color:var(--green);font-weight:750;font-size:25px;font-variant-numeric:tabular-nums;line-height:1.4}
+#live,#metrics{grid-template-columns:repeat(3,minmax(0,1fr));gap:12px}.metric{background:#f5f8f9;border:1px solid #dfe8eb;border-radius:11px;padding:15px 14px;min-height:91px}.metric small{font-size:12px;color:#526775;line-height:1.55}.metric strong{display:block;margin-top:4px;font-size:24px;line-height:1.3;letter-spacing:-.025em}.metric:has(.good){border-color:#cde3dc}.chart{border-radius:12px;background:#fff;margin:20px 0}.legend{flex-wrap:wrap}
+button,.file{border-radius:10px;min-height:44px}button:focus-visible,.file:focus-visible{outline:3px solid #258478;outline-offset:2px}button.primary{background:var(--green);border-color:var(--green);padding:14px 16px;box-shadow:0 3px 8px #176c601c}#saveRecord{margin-top:18px}#cancelEdit{margin-top:9px}#ideas .field{margin-bottom:20px}#manage input[type=file]{margin:7px 0 17px}table th{background:#eaf0f3}td,th{padding:12px}footer{color:#596c7b}.scroll{border-radius:9px}
+@media(max-width:680px){main{padding:15px 13px 40px}header{padding:21px 17px;border-radius:15px}header h1{font-size:24px}header .logo{width:44px;height:44px;font-size:21px}header .brand{gap:11px}.card{padding:19px 16px;border-radius:14px}.grid{gap:15px 12px}#live,#metrics{grid-template-columns:repeat(2,minmax(0,1fr))}nav button{font-size:12px;padding:9px 3px}h2{font-size:20px}.metric strong{font-size:21px}}
+@media(max-width:480px){#basic,#work{grid-template-columns:1fr}#after,#results,#travel{grid-template-columns:repeat(2,minmax(0,1fr))}.field label{font-size:13px}header p{font-size:12px}#recordForm>.section>h3{font-size:15px;padding:10px 12px}.metric{padding:12px 10px}nav{gap:2px;padding:4px}nav button{font-size:11px}}
+@media(prefers-reduced-motion:reduce){input,select,textarea{transition:none}}
+
+.time-hint{display:inline-block;margin-left:8px;color:#176c60;font-weight:700;background:#e7f3ee;border-radius:6px;padding:1px 8px}#record .muted strong{color:#a14427}@media(max-width:480px){.time-hint{margin-left:0;margin-top:5px}}
+
+/* V2.58 — welcoming, low-friction form styling; visual changes only */
+:root{--navy:#20394d;--green:#176c60;--bg:#f3f6f7;--line:#dce5e8;--ink:#203448}
+body{background:var(--bg);color:var(--ink)}
+main{max-width:1010px}
+header{background:linear-gradient(120deg,#20394d,#264f60);border:0;box-shadow:0 8px 24px #20394d16}
+header .logo{background:#ffffff1c;border:1px solid #ffffff55;box-shadow:inset 0 1px 2px #ffffff30}
+nav{position:relative;box-shadow:0 7px 28px #22394a0b}
+nav button{transition:background .18s,color .18s,transform .18s}
+nav button.active{background:#176f66;box-shadow:0 3px 9px #14645825}
+nav button:hover:not(.active){background:#edf6f2;filter:none}
+.card{border:1px solid #e0e9e7;box-shadow:0 7px 28px #20493f0b;background:#fff}
+#record>h2{font-size:25px;margin-bottom:3px;letter-spacing:.01em}
+#record>p.muted{display:flex;align-items:center;gap:7px;flex-wrap:wrap;margin:5px 0 5px;font-size:13px}
+#record>p.muted strong{font-weight:700;color:#99502e}
+.time-hint{margin-left:auto;background:#e5f4ec;border:1px solid #c8e8db;color:#20725c;border-radius:999px;padding:3px 12px;font-size:12px}
+#recordForm>.section{border-top:0;margin-top:23px;padding:23px 22px 22px;background:#fff;border:1px solid var(--line);border-radius:16px;box-shadow:0 2px 6px #213f4104}
+#recordForm>.section:first-child{margin-top:23px}
+#recordForm>.section>h3{margin:-23px -22px 22px;padding:15px 20px;background:#f3f6f8;border:0;border-bottom:1px solid var(--line);border-radius:16px 16px 0 0;color:var(--navy);font-size:17px;letter-spacing:.02em}
+#recordForm>.section:nth-of-type(2)>h3{background:#f3f6f8;color:var(--navy);border-bottom-color:var(--line)}
+#recordForm>.section:nth-of-type(3)>h3{background:#f3f6f8;color:var(--navy);border-bottom-color:var(--line)}
+#recordForm h4{font-size:14px;color:#3b6470;border-left:0;margin:23px 0 14px;padding:0 0 9px;border-bottom:1px solid #e1eae8;font-weight:750}
+#recordForm h4::before{content:'';display:inline-block;width:7px;height:7px;background:#6aa994;border-radius:50%;vertical-align:middle;margin-right:9px;transform:translateY(-1px)}
+.field label{color:#314b54;font-size:13px;font-weight:700;margin-bottom:7px}
+.field small{font-size:12px;color:#70818b}
+input:not([type=checkbox]):not([type=range]),select,textarea{background:white;border-color:#cfddd9;border-radius:11px;box-shadow:0 1px 2px #243b4005}
+input:not([type=checkbox]):not([type=range]):hover,select:hover,textarea:hover{border-color:#9cbbb2}
+input:not([type=checkbox]):not([type=range]):focus,select:focus,textarea:focus{border-color:#239181;outline:2px solid #6ec6b54a;outline-offset:0;box-shadow:0 0 0 3px #6ec6b524;background:white}
+input:disabled{background:#edf3f2;color:#637874}
+#work+.field,#results+.field{background:#eff9f3;border-color:#cbe5d6}
+output#actualOutput,output#breakOutput,output#completedOutput{color:#157a6b}
+#live .metric{background:#f3f6f8;border-color:var(--line);min-height:100px;padding:16px}
+#live .metric strong{color:#205d51}
+#metrics .metric{background:#f3f6f8}
+#saveRecord{min-height:54px;border-radius:12px;box-shadow:0 5px 14px #157a6b32;font-size:16px;letter-spacing:.025em;transition:transform .15s,box-shadow .15s}
+#saveRecord:hover{transform:translateY(-1px);box-shadow:0 8px 17px #157a6b3c;filter:none}
+#saveRecord:active{transform:translateY(0)}
+#storage{border-radius:12px}
+#status:not(:empty){margin:7px 0 12px}
+#ideas .card,#dashboard .card,#manage .card{border-color:#e0e9e7}
+@media(max-width:680px){#recordForm>.section{margin-top:17px;padding:18px 14px}#recordForm>.section>h3{margin:-18px -14px 18px;padding:13px 14px;font-size:15px}#record>h2{font-size:21px}.time-hint{margin-left:0}}
+@media(max-width:480px){#after,#results,#travel{grid-template-columns:repeat(2,minmax(0,1fr));gap:14px 11px}#basic,#work{grid-template-columns:1fr}#recordForm h4{margin:20px 0 12px}#live .metric{min-height:85px;padding:12px 10px}#live .metric strong{font-size:20px}nav button{font-size:11px}header h1{letter-spacing:1px}}
+@media(prefers-reduced-motion:reduce){nav button,#saveRecord{transition:none}}
+
+
+/* Keep automatic-analysis and dashboard metric labels on one line. */
+#live .metric small, #metrics .metric small {white-space:nowrap;overflow:visible;font-size:11px;letter-spacing:-.025em;}
+@media (max-width:480px) {#live,#metrics {grid-template-columns:1fr;} #live .metric small,#metrics .metric small{font-size:12px;}}
+/* Explanation split into two lines on wider screens, wraps naturally on phones. */
+#recordForm .explanation-two-lines{font-size:11px;line-height:1.55;letter-spacing:-.02em}
+#recordForm .explanation-two-lines .note-line{display:block}
+@media(min-width:900px){#recordForm .explanation-two-lines{white-space:nowrap}}
+@media(max-width:899px){#recordForm .explanation-two-lines{font-size:12px;overflow-wrap:anywhere}}
+
+/* V2.67: cohesive slate / ocean / evergreen palette for all analysis cards. */
+#live .metric{background:#f5f7f9;border:1px solid #dfe6eb;border-left:3px solid #b6c5d0;border-radius:11px;box-shadow:none;transition:background .15s ease}
+#live .metric strong{color:#344b5f}
+/* Pay indicators: related hues within one cool palette, not competing colors. */
+#live .metric:nth-child(1){border-left-color:#879bad}
+#live .metric:nth-child(1) strong{color:#50677b}
+#live .metric:nth-child(2){border-left-color:#547d95}
+#live .metric:nth-child(2) strong{color:#315e78}
+#live .metric:nth-child(3){border-left-color:#4a8778}
+#live .metric:nth-child(3) strong{color:#286b5d}
+#live .metric:nth-child(4){border-left-color:#789b9c}
+#live .metric:nth-child(4) strong{color:#3e7477}
+/* Workload, time and exception indicators remain visually quieter. */
+#live .metric:nth-child(n+5){border-left-color:#b6c5d0}
+#live .metric:nth-child(n+5) strong{color:#344b5f}
+#live .metric:nth-child(7){border-left-color:#7c97a5}
+#live .metric:nth-child(7) strong{color:#42677a}
+
+/* V2.68: end-time difference: late=muted red, early=muted green, on-time=slate. */
+#live .metric:nth-child(7) strong.end-late,#metrics .metric strong.end-late{color:#b45353}
+#live .metric:nth-child(7) strong.end-early,#metrics .metric strong.end-early{color:#32836b}
+#live .metric:nth-child(7) strong.end-neutral,#metrics .metric strong.end-neutral{color:#647586}
+
+/* V2.69 — consistent reward numerals, meaningful differences only. */
+#live .metric:nth-child(-n+4) strong{color:#315e78}
+#live .metric:nth-child(-n+4){border-left-color:#7892a2}
+#live .metric:nth-child(7) strong.end-late,#metrics .metric strong.end-late{color:#b45353}
+#live .metric:nth-child(7) strong.end-early,#metrics .metric strong.end-early{color:#32836b}
+#live .metric:nth-child(7) strong.end-neutral,#metrics .metric strong.end-neutral{color:#647586}
+
+/* Mobile-first finishing layer — presentation only, leaves IDs and scripts intact. */
+html{-webkit-text-size-adjust:100%;scroll-padding-top:78px}
+body{overflow-x:hidden}
+button,input,select,textarea{touch-action:manipulation}
+button:focus-visible,a:focus-visible{outline:3px solid #7cc7b8;outline-offset:3px}
+@media(max-width:640px){
+  body{font-size:15px;line-height:1.65;background:#f3f6f7}
+  main{width:100%;max-width:100%;margin:0;padding:10px 12px calc(30px + env(safe-area-inset-bottom,0px))}
+  header{padding:17px 17px 16px;margin:0 0 11px;border-radius:15px;box-shadow:0 4px 12px #20394d14}
+  header .brand{align-items:center;gap:12px}
+  header .logo{width:43px;height:43px;min-width:43px;border-radius:12px;font-size:21px}
+  header h1{font-size:24px;line-height:1.15;letter-spacing:.9px}
+  header p{font-size:12px;line-height:1.35;overflow-wrap:anywhere}
+  header small{font-size:11px}
+  nav{position:sticky;top:0;z-index:15;grid-template-columns:repeat(4,minmax(0,1fr));gap:4px;margin:0 -2px 13px;padding:7px 3px;background:#f3f6f7ed;border-radius:12px;box-shadow:0 4px 10px #20394d08;backdrop-filter:blur(8px)}
+  nav button{min-width:0;min-height:46px;padding:9px 2px;border-radius:10px;font-size:clamp(10px,2.85vw,13px);font-weight:700;line-height:1.25;white-space:normal;word-break:keep-all}
+  #storage{margin-bottom:12px;padding:10px 12px;font-size:12px;line-height:1.5}
+  .card{padding:17px 14px;border-radius:14px;margin-bottom:12px;box-shadow:0 3px 12px #19394a08}
+  #record>h2,#dashboard h2,#ideas h2,#manage h2{font-size:20px;line-height:1.35;margin-bottom:10px}
+  #record>p.muted{font-size:12px;line-height:1.6;margin-bottom:13px}
+  #recordForm>.section{margin-top:15px;padding:15px 12px 17px;border-radius:13px}
+  #recordForm>.section:first-child{margin-top:15px}
+  #recordForm>.section>h3{margin:-15px -12px 18px;padding:12px 13px;font-size:15px;line-height:1.4;letter-spacing:0}
+  #recordForm h4{font-size:14px;margin:20px 0 12px;padding-bottom:8px}
+  .grid,#basic,#work,#after,#results,#travel{gap:13px 11px}
+  #basic,#work{grid-template-columns:1fr}
+  #after,#results,#travel{grid-template-columns:repeat(2,minmax(0,1fr))}
+  #basic .field,#work .field,#after .field,#results .field,#travel .field{min-width:0}
+  .field label{font-size:13px;line-height:1.45;margin-bottom:7px;overflow-wrap:anywhere}
+  .field small,.field>small{display:block;font-size:11.5px;line-height:1.45;margin-top:5px}
+  input:not([type=checkbox]):not([type=range]),select,textarea{width:100%;min-width:0;min-height:48px;font-size:16px;padding:11px 12px;border-radius:10px}
+  input[type=date],input[type=datetime-local],input[type=time]{display:block;max-width:100%;-webkit-appearance:none;appearance:auto}
+  textarea{min-height:105px;line-height:1.55}
+  button,.file{min-height:46px}
+  #saveRecord{min-height:54px;width:100%;font-size:16px}
+  .actions{gap:9px}
+  .actions button,.actions .file{flex-grow:1;min-width:0}
+  #live,#metrics{grid-template-columns:1fr!important;gap:9px}
+  #live .metric,#metrics .metric{min-height:unset;padding:13px 14px;border-radius:11px}
+  #live .metric small,#metrics .metric small{font-size:12px;line-height:1.45;letter-spacing:0;white-space:normal;overflow-wrap:anywhere}
+  #live .metric strong,#metrics .metric strong{font-size:23px;line-height:1.45;overflow-wrap:anywhere}
+  .metric strong{font-variant-numeric:tabular-nums}
+  #recordForm .explanation-two-lines{font-size:11.5px;white-space:normal;line-height:1.55}
+  #recordForm .explanation-two-lines .note-line{display:block}
+  #actualOutput{font-size:19px;line-height:1.5}
+  #ideaForm .grid{grid-template-columns:1fr}
+  .scroll{max-width:100%;-webkit-overflow-scrolling:touch}
+  table{font-size:12px}
+  td,th{padding:10px 8px}
+  footer{font-size:11px;line-height:1.6;padding:0 8px}
+  .time-hint{margin-top:7px;margin-left:0;font-size:11px;padding:3px 9px}
+}
+@media(max-width:370px){
+  main{padding-left:9px;padding-right:9px}
+  .card{padding:15px 11px}
+  #after,#results,#travel{grid-template-columns:1fr}
+  nav button{font-size:10px;padding:7px 1px}
+  #recordForm>.section{padding-left:11px;padding-right:11px}
+  #recordForm>.section>h3{margin-left:-11px;margin-right:-11px}
+}
+@media(min-width:641px) and (max-width:850px){
+  main{padding:22px 18px 48px}
+  #live,#metrics{grid-template-columns:repeat(2,minmax(0,1fr))}
+  #live .metric small,#metrics .metric small{white-space:normal;overflow-wrap:anywhere}
+}
+
+
+/* Mobile: three-column automatic-analysis cards only; Dashboard unchanged. */
+@media (max-width:640px){
+  #live{grid-template-columns:repeat(3,minmax(0,1fr))!important;gap:7px!important}
+  #live .metric{min-width:0;min-height:100px;padding:10px 6px!important}
+  #live .metric small{display:block;font-size:clamp(9px,2.45vw,11px)!important;line-height:1.35;white-space:normal!important;overflow-wrap:anywhere;word-break:normal}
+  #live .metric strong{font-size:clamp(13px,3.6vw,19px)!important;line-height:1.3;overflow-wrap:anywhere}
+}
+@media (max-width:360px){#live{gap:5px!important}#live .metric{padding:8px 4px!important;min-height:96px}}
+
+/* FINAL: 03 自動分析 = exactly 3 columns × 3 rows, including on phones. */
+#recordForm #live.grid {
+  display: grid !important;
+  grid-template-columns: repeat(3, minmax(0, 1fr)) !important;
+  grid-auto-flow: row !important;
+  gap: 8px !important;
+  width: 100%;
+}
+#recordForm #live > .metric {
+  min-width: 0 !important;
+  margin: 0;
+  padding: 11px 8px !important;
+  min-height: 112px !important;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}
+#recordForm #live > .metric small {
+  display: block;
+  min-width: 0;
+  font-size: 11px !important;
+  line-height: 1.35 !important;
+  letter-spacing: -0.025em;
+  overflow-wrap: anywhere;
+  white-space: normal !important;
+}
+#recordForm #live > .metric strong {
+  display: block;
+  min-width: 0;
+  font-size: clamp(13px, 3.7vw, 21px) !important;
+  letter-spacing: -0.04em;
+  line-height: 1.3 !important;
+  overflow-wrap: anywhere;
+  white-space: normal;
+}
+@media(max-width:390px) {
+  #recordForm #live.grid {gap: 5px !important;}
+  #recordForm #live > .metric {padding: 9px 5px !important; min-height: 114px !important;}
+  #recordForm #live > .metric small {font-size: 10px !important;}
+  #recordForm #live > .metric strong {font-size: 13px !important;}
+}
+
+/* My Data: 3 columns, 4 rows (11 indicators; last slot left empty). */
+#dashboard #metrics.grid {
+  display:grid !important;
+  grid-template-columns:repeat(3,minmax(0,1fr)) !important;
+  grid-auto-flow:row !important;
+  gap:8px !important;
+}
+#dashboard #metrics > .metric {
+  min-width:0 !important;
+  min-height:105px !important;
+  padding:11px 8px !important;
+  display:flex;
+  flex-direction:column;
+  justify-content:space-between;
+}
+#dashboard #metrics > .metric small {
+  min-width:0;
+  display:block;
+  white-space:normal !important;
+  overflow-wrap:anywhere;
+  line-height:1.35 !important;
+  font-size:11px !important;
+  letter-spacing:-.025em;
+}
+#dashboard #metrics > .metric strong {
+  min-width:0;
+  display:block;
+  font-size:clamp(13px,3.65vw,21px) !important;
+  line-height:1.3 !important;
+  white-space:normal;
+  overflow-wrap:anywhere;
+}
+@media(max-width:390px){
+  #dashboard #metrics.grid{gap:5px !important}
+  #dashboard #metrics > .metric{padding:9px 5px !important;min-height:110px !important}
+  #dashboard #metrics > .metric small{font-size:10px !important}
+  #dashboard #metrics > .metric strong{font-size:13px !important}
+}
+
+/* My Data: 3 columns x 4 rows on mobile; 11 indicators. */
+#dashboard #metrics.grid {
+  display:grid !important;
+  grid-template-columns:repeat(3,minmax(0,1fr)) !important;
+  grid-template-rows:repeat(4,minmax(106px,auto)) !important;
+  grid-auto-flow:row !important;
+  gap:8px !important;
+}
+#dashboard #metrics.grid::after { content:none !important; display:none !important; }
+#dashboard #metrics > .metric {
+  min-width:0 !important;
+  padding:10px 7px !important;
+  min-height:106px !important;
+}
+#dashboard #metrics > .metric small {
+  font-size:clamp(10px,2.4vw,12px) !important;
+  white-space:normal !important;
+  overflow-wrap:anywhere !important;
+  line-height:1.35 !important;
+}
+#dashboard #metrics > .metric strong {
+  font-size:clamp(13px,3.2vw,19px) !important;
+  overflow-wrap:anywhere !important;
+  line-height:1.25 !important;
+}
+@media(max-width:390px) {
+  #dashboard #metrics.grid { gap:5px !important; }
+  #dashboard #metrics > .metric {padding:9px 5px !important;}
+}
+</style></head><body><main><header><div class="brand"><div class="logo" aria-hidden="true">▤</div><div><h1>BLOCK TRACKER</h1><p>労働者参加型 Block 記録・分析ツール</p><small>個人記録版 V2.58</small></div></div></header><div id="storage" class="notice" role="status"></div><nav aria-label="メニュー"><button class="active" data-page="record">Block記録</button><button data-page="dashboard">マイデータ</button><button data-page="ideas">現場のノート</button><button data-page="manage">データ管理</button></nav><div id="status" class="status" role="status" aria-live="polite"></div>
+<section id="record" class="card"><h2>新規Block記録</h2><p class="muted">1 Blockにつき1件。<strong>運転中は入力しないでください。</strong> <span class="time-hint">入力目安：約2〜3分</span></p><form id="recordForm"><div class="section"><h3>01　基本情報・Block受諾時</h3><div id="basic" class="grid"></div></div><div class="section"><h3>02　配送・業務記録</h3><h4>基本情報</h4><div id="after" class="grid"></div><h4>勤務時間</h4><div id="work" class="grid"></div><div class="field"><label>実労働時間（自動計算・入力不可）</label><output id="actualOutput">—</output><small>業務開始時刻から業務終了時刻までを自動計算します。日付をまたぐ場合は翌日として計算します。</small></div><h4>配達結果 <small style="font-weight:400;color:#64748b;font-size:.78em">（該当する場合のみ記入）</small></h4><div id="results" class="grid"></div><div class="field"><label for="exceptionReason">例外対応の発生理由</label><textarea id="exceptionReason" placeholder="自由に記入してください。"></textarea><small>個人や顧客が特定される情報は記入しないでください。</small></div><h4>走行実績</h4><div id="travel" class="grid"></div><div hidden><select id="pressure"><option value="">未回答</option><option value="1">1</option><option value="2">2</option><option value="3">3</option><option value="4">4</option><option value="5">5</option></select><output id="pressureValue"></output><textarea id="reason"></textarea></div></div><div class="section"><h3>03　自動分析</h3><div class="grid" id="live"></div><p class="muted explanation-two-lines">「再配達等の各種延べ件数割合」は、再配達件数と未配荷物数の合計を荷物総数で割って算出します。<span class="note-line">同じ荷物が重複して数えられる場合があるため、実際に対応が発生した荷物の割合とは必ずしも一致しません。</span></p><button class="primary full" type="submit" id="saveRecord">Blockデータを記録する</button><button type="button" id="cancelEdit" class="full" hidden>編集を取り消す</button></div></form></section>
+<section id="dashboard" hidden><div class="card"><h2>マイダッシュボード</h2><div class="grid"><div class="field"><label for="filterTime">予定時間で絞り込む</label><select id="filterTime"><option value="">すべて</option></select></div><div class="field"><label for="filterID">協力者ID</label><select id="filterID"><option value="">すべて</option></select></div></div><div id="dashMode" class="actions"></div><div id="metrics" class="grid section"></div><p class="muted">平均値は計算可能なBlockのみを対象として算出。</p></div></section>
+<section id="ideas" hidden><div class="card"><h2>現場のノート</h2><p class="muted">日々の配送で経験したことや、アプリ上の評価・オファーの変化などを自由に記録できます。わからない項目は空欄でかまいません。</p><form id="ideaForm"><div class="field"><label for="question">現場で起きたこと・気づいたこと</label><textarea id="question" placeholder="例：配達で印象に残った出来事、仕事の進め方の変化など"></textarea></div><div class="field"><label for="hypothesis">評価・アカウント状況の変化（任意）</label><textarea id="hypothesis" placeholder="例：評価が上下した時期、警告・通知、アプリ上の表示の変化など"></textarea></div><div class="field"><label for="method">オファー・業務量の変化（任意）</label><textarea id="method" placeholder="例：オファーの出方、報酬、荷物数、配送範囲などの変化"></textarea></div><div class="field"><label for="result">その他のメモ（任意）</label><textarea id="result" placeholder="疑問に思ったこと、ほかの労働者と話したこと、記録したいことなど"></textarea></div><button class="primary full" type="submit">ノートを保存する</button></form></div><div class="card"><h3>保存した現場のノート</h3><div id="ideaList"></div></div></section>
+<section id="manage" hidden><div class="card"><h2>データ管理</h2><div class="notice warn">データはこのブラウザ内に保存されます。端末の変更、履歴削除、プライベートブラウズ等で失われることがあります。定期的にCSVを保存してください。研究者に自動送信されません。</div><div class="actions"><button id="exportRecords">Block CSVを保存</button><button id="exportIdeas">現場ノートCSVを保存</button></div><div class="section"><h3>CSVの読み込み</h3><p class="muted">本ツールから保存したCSVを選択してください。同一の記録IDは追加しません。</p><label for="importRecords">Block CSV</label><input id="importRecords" type="file" accept=".csv,text/csv"><label for="importIdeas">現場ノート CSV</label><input id="importIdeas" type="file" accept=".csv,text/csv"></div><div class="section"><button id="demo">架空データで試す</button><p class="muted">架空データは実データと区別し、通常の集計・CSV出力から除外します。</p><button id="clearDemo">架空データのみ削除</button></div></div><div class="card"><h3>保存済みBlock一覧</h3><div class="scroll" id="recordList"></div><div class="section"><button id="clearAll" class="bad">すべてのデータを削除</button></div></div></section><footer>個人用試作版 ｜ 正式調査前に同意・データ管理方法を確認</footer></main>
+<script>
+'use strict';const $=id=>document.getElementById(id);const key='block-tracker-jp-v2';let storageOK=true;let records=[],ideas=[],editing=null,ideaEditing=null,showDemo=false;try{const raw=localStorage.getItem(key);if(raw){const x=JSON.parse(raw);records=Array.isArray(x.records)?x.records:[];ideas=Array.isArray(x.ideas)?x.ideas:[];}localStorage.setItem(key,JSON.stringify({records,ideas}));}catch(e){storageOK=false;}function storageMessage(){ $('storage').textContent=storageOK?'端末内保存モード ｜ データは外部に送信されません。旧版とは別に保存されます。':'端末内保存が利用できません。ページを閉じる前にCSVを保存してください。';$('storage').classList.toggle('warn',!storageOK);}storageMessage();for(const r of records){if(Object.prototype.hasOwnProperty.call(r,'breakHours')){r.breakMins=(Number(r.breakHours)||0)*60+(Number(r.breakMins)||0);delete r.breakHours;}}function save(){try{localStorage.setItem(key,JSON.stringify({records,ideas}));storageOK=true;}catch(e){storageOK=false;}storageMessage();}function msg(t){$('status').textContent=t;}const uid=()=> globalThis.crypto?.randomUUID?.()||Date.now().toString(36)+'-'+Math.random().toString(36).slice(2);const today=()=>{const d=new Date();return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`};const specs={basic:[['worker','調査協力者ID（匿名）','text'],['station','配送ステーション名','text'],['offer','オファー受諾日時','datetime-local',true],['blockDate','Block実施日','date',true],['start','Block開始時刻（アプリ表示）','time',true],['end','Block終了時刻（アプリ表示）','time',true],['pay','提示報酬（円）','number',true,0],['premium','割増報酬の有無','select',false,0,['','あり','なし','不明']],['extra','追加報酬（円）','number']],after:[['packages','荷物の総数（個）','number',true,0],['pins','ピン個数（件）','number'],['specified','時間指定荷物（個）','number']],work:[['checkin','業務開始時刻','time',true],['finish','業務終了時刻','time',true],['deliveryStart','配送開始時刻','time']],results:[['redelivery','再配達件数（件）','number'],['returned','持ち戻り荷物数（個）','number'],['undelivered','未配荷物数（個）','number'],['exceptionMinutes','各種対応に要した時間（分）','number']],travel:[['distance','配送距離（km）','number',false,0],['fuel','燃料費（円）','number',false,0]]};const all=Object.values(specs).flat();function el(tag,text,cls){const e=document.createElement(tag);if(text!==undefined)e.textContent=text;if(cls)e.className=cls;return e;}for(const [group,fields] of Object.entries(specs)){for(const [id,label,type,required,min,opts] of fields){const wrap=el('div',undefined,'field');const l=el('label',label);l.htmlFor=id;wrap.append(l);const input=el(type==='select'?'select':type==='textarea'?'textarea':'input');input.id=id;input.name=id;if(type==='select'){for(const val of opts){const opt=el('option',val||'未回答');opt.value=val;input.append(opt);}}else if(type!=='textarea')input.type=type;if(type==='number'){input.min=min??0;input.step=id==='distance'?'0.1':'1';input.inputMode='decimal';}if(required)input.required=true;if(id==='blockDate')input.value=today();wrap.append(input);const hints={extra:'追加報酬なしの場合は0を入力。未確定の場合は空欄。',deliveryStart:'最初の配達を開始した時刻。',returned:'配達できず拠点へ持ち帰った荷物の数',undelivered:'翌日以降に回す荷物など、持ち戻り以外で配達完了していない荷物の数',exceptionMinutes:'再配達・不在対応・持ち戻り・未配処理などに要した時間を、おおよそで記入してください。'};if(hints[id])wrap.append(el('small',hints[id]));$(group).append(wrap);}}const fields=[...all.map(x=>x[0]),'pressure','reason','exceptionReason'];const numbers=all.filter(x=>x[2]==='number').map(x=>x[0]);const num=v=>v===''||v==null?null:Number(v);const finite=v=>typeof v==='number'&&Number.isFinite(v);const yen=v=>finite(v)?'¥'+v.toLocaleString('ja-JP',{minimumFractionDigits:1,maximumFractionDigits:1}):'—';const fmt=(v,d=1)=>finite(v)?v.toFixed(d):'—';const sum=(arr,f)=>arr.reduce((s,r)=>s+(f(r)??0),0);const mean=(arr,f)=>{let x=arr.map(f).filter(finite);return x.length?x.reduce((a,b)=>a+b,0)/x.length:null;};const minutes=(a,b)=>{if(!a||!b||!a.includes('T')||!b.includes('T'))return null;const n=(Date.parse(b+'+09:00')-Date.parse(a+'+09:00'))/60000;return Number.isFinite(n)?n:null;};const hm=n=>Number.isFinite(n)?(n<0?'−':'')+Math.floor(Math.abs(n)/60)+'時間'+Math.abs(n)%60+'分':'—';function derive(r){r.date=(r.start||'').slice(0,10);r.planned=minutes(r.start,r.end);const span=minutes(r.checkin,r.finish);r.breaks=0;r.actual=span;return r;}function completed(r){return finite(r.packages)&&finite(r.returned)&&finite(r.undelivered)&&r.returned+r.undelivered<=r.packages?r.packages-r.returned-r.undelivered:null;}const ratio=(v,total)=>finite(v)&&v>=0&&total>0&&v<=total?v/total*100:null;const pct=v=>finite(v)?fmt(v)+'%':'—';const signed=v=>finite(v)?(v>0?'+':'')+fmt(v,1)+'分':'—';function calc(r){
+ const planned=r.planned, actual=r.actual, pay=r.pay, packages=r.packages;
+ const delivered=completed(r);
+ return {
+  expected:planned>0&&finite(pay)?pay*60/planned:null,
+  rate:actual>0&&finite(pay)?pay*60/actual:null,
+  fuelRate:actual>0&&finite(pay)&&finite(r.fuel)?(pay-r.fuel)*60/actual:null,
+  overtime:planned>0&&actual>0?Math.max(0,actual-planned):null,
+  density:planned>0&&finite(packages)?packages*60/planned:null,
+  actualDensity:actual>0&&finite(delivered)?delivered*60/actual:null,
+  minutesPerDelivered:actual>0&&finite(delivered)&&delivered>0?actual/delivered:null,
+  endDiff:minutes(r.end,r.finish),
+  diff:planned>0&&actual>0?actual-planned:null,
+  exceptionRate:actual>0&&finite(r.exceptionMinutes)&&r.exceptionMinutes<=actual?r.exceptionMinutes/actual*100:null,
+   responseCountRate:packages>0&&[r.redelivery,r.undelivered].every(finite)?(r.redelivery+r.undelivered)/packages*100:null,
+  payPerPackage:finite(pay)&&packages>0?pay/packages:null,
+  exceeded:planned>0&&actual>0?actual>planned:null
+ };
+}
+function formData(){const r={};for(const k of fields){if(numbers.includes(k)||k==='pressure'){r[k]=num($(k).value);}else r[k]=$(k).value;}
+// Preserve the historical full datetime record schema while requesting the date once.
+const base=r.blockDate||'';r.start=base&&r.start?base+'T'+r.start:'';r.end=base&&r.end?base+'T'+r.end:'';
+if(r.start&&r.end&&minutes(r.start,r.end)<0){const d=new Date(base+'T00:00:00Z');d.setUTCDate(d.getUTCDate()+1);r.end=d.toISOString().slice(0,10)+'T'+$('end').value;}
+// Work time inputs are clock-only. Attach the Block's app-displayed start date
+// and advance the day when sequential times cross midnight.
+let day=(r.start||'').slice(0,10)||today();let previous=null;
+for(const k of ['checkin','deliveryStart','finish']){
+ const clock=r[k];if(!clock){r[k]='';continue;}
+ let stamp=day+'T'+clock;
+ if(previous&&minutes(previous,stamp)<0){const d=new Date(day+'T00:00:00Z');d.setUTCDate(d.getUTCDate()+1);day=d.toISOString().slice(0,10);stamp=day+'T'+clock;}
+ r[k]=stamp;previous=stamp;
+}
+delete r.blockDate;r.countUnit='packages';r.breakMins=0;return derive(r);}function metric(parent,label,value,color){const b=el('div',undefined,'metric');b.append(el('small',label),el('strong',value,color));parent.append(b);}
+function endTimeClass(v){return !finite(v)?'end-neutral':v>0?'end-late':v<0?'end-early':'end-neutral';}function live(){const r=formData(),c=calc(r);
+ $('actualOutput').textContent=hm(r.actual);$('live').replaceChildren();
+ metric($('live'),'予定時給',yen(c.expected));
+ metric($('live'),'実際の時給',yen(c.rate));
+
+ metric($('live'),'燃料費を引いた時給',yen(c.fuelRate));
+ metric($('live'),'荷物1個あたりの報酬',yen(c.payPerPackage));
+ metric($('live'),'1時間あたりの荷物数',finite(c.density)?fmt(c.density)+'個/h':'—');
+ metric($('live'),'荷物1個あたりの平均業務時間',finite(c.minutesPerDelivered)?fmt(c.minutesPerDelivered)+'分/個':'—');
+ metric($('live'),'終了時刻の差',signed(c.endDiff),endTimeClass(c.endDiff));
+ metric($('live'),'再配達等の各種対応時間の割合',pct(c.exceptionRate));
+  metric($('live'),'再配達等の各種延べ件数割合',pct(c.responseCountRate));
+
+}
+function resetForm(){autoCheckin=true;editing=null;$('recordForm').reset();$('blockDate').value=today();['start','end','offer','checkin','deliveryStart','finish'].forEach(k=>$(k).value='');$('saveRecord').textContent='Blockデータを記録する';$('cancelEdit').hidden=true;live();}function page(id){document.querySelectorAll('main>section').forEach(x=>x.hidden=x.id!==id);document.querySelectorAll('nav button').forEach(x=>{x.classList.toggle('active',x.dataset.page===id);x.setAttribute('aria-current',x.dataset.page===id?'page':'false');});if(id==='dashboard')dashboard();if(id==='manage')manage();if(id==='ideas')renderIdeas();}document.querySelectorAll('nav button').forEach(b=>b.onclick=()=>page(b.dataset.page));let autoCheckin=true;$('recordForm').addEventListener('input',e=>{if(e.target.id==='checkin')autoCheckin=!$('checkin').value;if(e.target.id==='start'&&(autoCheckin||!$('checkin').value)){$('checkin').value=$('start').value;autoCheckin=true;}live();});$('cancelEdit').onclick=resetForm;function valid(r){const span=minutes(r.checkin,r.finish);
+ const ds=minutes(r.checkin,r.deliveryStart),df=minutes(r.deliveryStart,r.finish);
+ return finite(span)&&span>=0&&(!r.deliveryStart||(finite(ds)&&ds>=0&&finite(df)&&df>=0))
+ &&/^\d{4}-\d{2}-\d{2}$/.test(r.date)&&r.planned>0&&r.actual>0
+ &&!!r.offer&&minutes(r.offer,r.start)>=0&&finite(r.pay)&&r.pay>=0
+ &&finite(r.packages)&&r.packages>=0
+ &&(r.returned==null||r.undelivered==null||r.returned+r.undelivered<=r.packages)
+ &&(r.specified==null||r.specified<=r.packages)
+ &&(r.exceptionMinutes==null||r.exceptionMinutes<=r.actual)
+ &&numbers.every(k=>r[k]==null||finite(r[k])&&r[k]>=0&&(k==='distance'||Number.isInteger(r[k])))
+ &&(r.pressure===null||[1,2,3,4,5].includes(r.pressure));}
+$('recordForm').onsubmit=e=>{e.preventDefault();const r=formData();if(!valid(r)){msg('時刻を確認してください。配送開始時刻は業務時間内にしてください。');return;}if(editing){let idx=records.findIndex(x=>x.id===editing);if(idx>=0)records[idx]={...records[idx],...r};}else records.push({...r,id:uid(),demo:false});save();resetForm();msg('Blockを記録しました。');showDemo=false;page('dashboard');};function editRecord(id){const r=records.find(x=>x.id===id);if(!r)return;resetForm();autoCheckin=false;editing=id;for(const k of fields){$(k).value=k==='blockDate'?((r.start||'').slice(0,10)||r.date||today()):(['start','end','checkin','deliveryStart','finish'].includes(k)?(r[k]||'').slice(11,16):(r[k]??''));}$('saveRecord').textContent='変更を保存する';$('cancelEdit').hidden=false;page('record');live();}function chart(parent,title,arr,series,unit=''){const block=el('div',undefined,'chart');block.append(el('h3',title));if(!arr.length){block.append(el('p','データがありません。','muted'));parent.append(block);return;}const data=arr.slice(-30),max=Math.max(1,...data.flatMap(r=>series.map(s=>s.f(r)).filter(finite)));const ns='http://www.w3.org/2000/svg';const svg=document.createElementNS(ns,'svg');svg.setAttribute('viewBox','0 0 600 240');svg.setAttribute('role','img');svg.setAttribute('aria-label',title);function shape(tag,attrs,txt){const e=document.createElementNS(ns,tag);for(const [k,v] of Object.entries(attrs))e.setAttribute(k,v);if(txt!==undefined)e.textContent=txt;svg.append(e);return e;}const left=58,top=12,bottom=202,w=525,h=190;for(let t=0;t<=4;t++){const y=bottom-h*t/4;shape('line',{x1:left,x2:left+w,y1:y,y2:y,stroke:'#e0e6ec'});shape('text',{x:left-6,y:y+4,'text-anchor':'end','font-size':11,fill:'#657585'},(max*t/4).toLocaleString('ja-JP',{minimumFractionDigits:1,maximumFractionDigits:1})+unit);}const step=w/data.length;data.forEach((r,i)=>{series.forEach((s,j)=>{const v=s.f(r);if(!finite(v))return;const bw=step*.78/series.length;const rect=shape('rect',{x:left+i*step+step*.11+j*bw,y:bottom-v/max*h,width:Math.max(1,bw-1),height:v/max*h,fill:s.color,rx:2});const tooltip=document.createElementNS(ns,'title');tooltip.textContent=`${r.date||''} ${s.name}: ${fmt(v)}${unit}`;rect.append(tooltip);});if(data.length<=15||i%Math.ceil(data.length/12)===0)shape('text',{x:left+(i+.5)*step,y:222,'text-anchor':'middle','font-size':10,fill:'#657585'},'B'+(arr.length-data.length+i+1));});block.append(svg);const legend=el('div',undefined,'legend');for(const s of series){const x=el('span');const d=el('i',undefined,'dot');d.style.background=s.color;x.append(d,document.createTextNode(s.name));legend.append(x);}block.append(legend);parent.append(block);}function fillOptions(id,values,label){const s=$(id),old=s.value;s.replaceChildren();const o=el('option','すべて');o.value='';s.append(o);for(const v of values){const a=el('option',label(v));a.value=v;s.append(a);}if([...s.options].some(o=>o.value===old))s.value=old;}function dashboard(){
+ const pool=records.filter(r=>!!r.demo===showDemo);
+ fillOptions('filterTime',[...new Set(pool.map(r=>r.planned))].sort((a,b)=>a-b),v=>hm(v));
+ fillOptions('filterID',[...new Set(pool.map(r=>r.worker).filter(Boolean))],v=>v);
+ const arr=pool.filter(r=>(!$('filterTime').value||r.planned===Number($('filterTime').value))&&(!$('filterID').value||r.worker===$('filterID').value)).sort((a,b)=>a.date.localeCompare(b.date));
+ $('metrics').replaceChildren();
+ metric($('metrics'),'記録Block数',String(arr.length));
+ metric($('metrics'),'平均予定時給',yen(mean(arr,r=>calc(r).expected)));
+ metric($('metrics'),'平均実際の時給',yen(mean(arr,r=>calc(r).rate)));
+
+ metric($('metrics'),'平均燃料費を引いた時給',yen(mean(arr,r=>calc(r).fuelRate)));
+ metric($('metrics'),'平均荷物1個あたりの報酬',yen(mean(arr,r=>calc(r).payPerPackage)));
+ metric($('metrics'),'平均1時間あたりの荷物数',fmt(mean(arr,r=>calc(r).density))+'個/h');
+ metric($('metrics'),'荷物1個あたりの平均業務時間',(finite(mean(arr,r=>calc(r).minutesPerDelivered))?fmt(mean(arr,r=>calc(r).minutesPerDelivered))+'分/個':'—'));
+ const avgEndDiff=mean(arr,r=>calc(r).endDiff);metric($('metrics'),'平均終了時刻の差',signed(avgEndDiff),endTimeClass(avgEndDiff));
+ const validOvertime=arr.filter(r=>calc(r).exceeded!==null);
+ metric($('metrics'),'予定時間を超えた割合',validOvertime.length?fmt(validOvertime.filter(r=>calc(r).exceeded).length/validOvertime.length*100)+'%':'—');
+ metric($('metrics'),'平均再配達等の各種対応時間の割合',pct(mean(arr,r=>calc(r).exceptionRate)));
+ metric($('metrics'),'平均再配達等の各種延べ件数割合',pct(mean(arr,r=>calc(r).responseCountRate)));
+ const p=$('dashMode');p.replaceChildren();
+ p.append(el('span',showDemo?'架空データ表示中（研究データではありません）':'実データ表示中','muted'));
+ if(showDemo){const b=el('button','実データに戻る');b.type='button';b.onclick=()=>{showDemo=false;dashboard();};p.append(b);}
+}
+for(const id of ['filterTime','filterID'])$(id).onchange=dashboard;
+function manage(){const p=$('recordList');p.replaceChildren();if(!records.length){p.append(el('p','まだ記録はありません。','muted'));return;}const t=el('table'),head=el('tr');for(const h of ['日付','ID','予定時間','実働時間','報酬（円）','荷物','実働時給','操作'])head.append(el('th',h));const th=el('thead');th.append(head);t.append(th);const body=el('tbody');for(const r of [...records].reverse()){const row=el('tr');for(const v of [r.date+(r.demo?'（架空）':''),r.worker||'—',hm(r.planned),hm(r.actual),r.pay,r.packages,yen(calc(r).rate)])row.append(el('td',String(v)));const td=el('td');const edit=el('button','編集');edit.onclick=()=>editRecord(r.id);const del=el('button','削除','bad');del.onclick=()=>{if(confirm('この記録を削除しますか？')){records=records.filter(x=>x.id!==r.id);save();manage();msg('記録を削除しました。');}};td.append(edit,del);row.append(td);body.append(row);}t.append(body);p.append(t);}const ideaFields=['question','hypothesis','method','result'];function resetIdea(){ideaEditing=null;$('ideaForm').reset();$('ideaForm').querySelector('button').textContent='ノートを保存する';}function renderIdeas(){const p=$('ideaList');p.replaceChildren();if(!ideas.length)p.append(el('p','まだノートはありません。','muted'));for(const r of [...ideas].reverse()){const div=el('div',undefined,'entry');div.append(el('small',r.date),el('h3',r.question||r.hypothesis||r.method||r.result||'現場のメモ'));for(const [k,l] of [['hypothesis','評価・アカウントの変化'],['method','オファー・業務量の変化'],['result','その他のメモ']])if(r[k])div.append(el('p',l+'：'+r[k]));const edit=el('button','編集');edit.onclick=()=>{ideaEditing=r.id;ideaFields.forEach(k=>$(k).value=r[k]||'');$('ideaForm').querySelector('button').textContent='ノートの変更を保存する';$('question').focus();};const del=el('button','削除','bad');del.onclick=()=>{if(confirm('このノートを削除しますか？')){ideas=ideas.filter(x=>x.id!==r.id);if(ideaEditing===r.id)resetIdea();save();renderIdeas();}};const a=el('div',undefined,'actions');a.append(edit,del);div.append(a);p.append(div);}}$('ideaForm').onsubmit=e=>{e.preventDefault();const values=Object.fromEntries(ideaFields.map(k=>[k,$(k).value.trim()]));if(!Object.values(values).some(Boolean)){msg('いずれかの項目に記入してください。');return;}if(ideaEditing){ideas=ideas.map(r=>r.id===ideaEditing?{...r,...values}:r);}else ideas.push({id:uid(),date:today(),...values});save();resetIdea();renderIdeas();msg('現場のノートを保存しました。');};
+const recordCols=['id',...fields.filter(k=>k!=='blockDate'),'breakMins','date','planned','actual','breaks'];const ideaCols=['id','date',...ideaFields];const computed=['expected_hourly_yen','actual_hourly_yen','fuel_adjusted_hourly_yen','overtime_min','assigned_packages_per_planned_hour','completed_packages_per_actual_hour','end_time_difference_min','worktime_difference_min','exceeded_block','exception_time_ratio_pct','yen_per_assigned_package','minutes_per_delivered_package','response_events_per_assigned_package_pct'];function csvCell(v){let s=v==null?'':String(v);if(typeof v==='string'&&(/^[\s]*[=+\-@]/.test(s)||/^[\t\r]/.test(s)))s="'"+s;return '"'+s.replace(/"/g,'""')+'"';}function exportCSV(name,cols,rows){const csv='\ufeff'+[cols.join(','),...rows.map(r=>cols.map(k=>csvCell(r[k])).join(','))].join('\r\n');const u=URL.createObjectURL(new Blob([csv],{type:'text/csv;charset=utf-8'}));const a=el('a');a.href=u;a.download=name+'_'+today()+'.csv';document.body.append(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(u),1500);}function exportRows(){exportCSV('block_records',[...recordCols,...computed],records.filter(r=>!r.demo).map(r=>{const c=calc(r);const round1=v=>finite(v)?Number(v.toFixed(1)):v;return {...r,expected_hourly_yen:round1(c.expected),actual_hourly_yen:round1(c.rate),fuel_adjusted_hourly_yen:round1(c.fuelRate),overtime_min:round1(c.overtime),assigned_packages_per_planned_hour:round1(c.density),completed_packages_per_actual_hour:round1(c.actualDensity),end_time_difference_min:round1(c.endDiff),worktime_difference_min:round1(c.diff),exceeded_block:c.exceeded,exception_time_ratio_pct:round1(c.exceptionRate),yen_per_assigned_package:round1(c.payPerPackage),minutes_per_delivered_package:round1(c.minutesPerDelivered),response_events_per_assigned_package_pct:round1(c.responseCountRate)};}));}$('exportRecords').onclick=exportRows;$('exportIdeas').onclick=()=>exportCSV('block_field_notes',ideaCols,ideas);function readCSV(s){s=s.replace(/^\ufeff/,'');let rows=[],row=[],cell='',quoted=false;for(let i=0;i<s.length;i++){const c=s[i];if(quoted){if(c==='"'&&s[i+1]==='"'){cell+='"';i++;}else if(c==='"')quoted=false;else cell+=c;}else if(c==='"'&&cell==='')quoted=true;else if(c===','){row.push(cell);cell='';}else if(c==='\r'||c==='\n'){if(c==='\r'&&s[i+1]==='\n')i++;row.push(cell);rows.push(row);row=[];cell='';}else cell+=c;}if(quoted)throw Error('CSVの引用符が不正です。');if(cell||row.length){row.push(cell);rows.push(row);}return rows.filter(r=>r.some(x=>x!==''));}async function importCSV(input,kind){try{const file=input.files[0];if(!file)return;if(file.size>15000000)throw Error('15MB以下のファイルを選択してください。');const [headers,...rows]=readCSV(await file.text());const cols=kind==='record'?recordCols:ideaCols;if(!headers||!['id','start','end','pay','packages','checkin','finish'].every(k=>headers.includes(k)))throw Error('このツールのCSV形式ではありません。');const list=kind==='record'?records:ideas;const seen=new Set(list.map(r=>r.id));let added=[],invalid=0,duplicates=0;for(const row of rows){const r=Object.fromEntries(cols.map(k=>[k,row[headers.indexOf(k)]??'']));if(!r.id){invalid++;continue;}if(seen.has(r.id)){duplicates++;continue;}if(kind==='record'){for(const k of [...numbers,'breakMins','pressure'])r[k]=num(r[k]);if(headers.includes('breakHours'))r.breakMins=(Number(row[headers.indexOf('breakHours')])||0)*60+(r.breakMins??0);r.countUnit=row[headers.indexOf('countUnit')]==='packages'?'packages':null;r.demo=false;derive(r);if(!valid(r)){invalid++;continue;}}else if(!ideaFields.some(k=>(r[k]||'').trim())||!/^\d{4}-\d{2}-\d{2}$/.test(r.date)){invalid++;continue;}seen.add(r.id);added.push(r);}if(!confirm(`${added.length}件を追加します（重複 ${duplicates}件、無効 ${invalid}件）。よろしいですか？`))return;list.push(...added);save();manage();msg(`${added.length}件を追加しました。重複 ${duplicates}件・無効 ${invalid}件はスキップ。`);}catch(e){msg('読み込みエラー：'+e.message);}finally{input.value='';}}$('importRecords').onchange=e=>importCSV(e.target,'record');$('importIdeas').onchange=e=>importCSV(e.target,'idea');$('demo').onclick=()=>{if(!records.some(r=>r.demo)){const vals=[[87,70,288],[124,95,384],[96,78,330],[161,120,492],[112,89,366],[145,117,456],[78,61,258],[136,101,426]];vals.forEach(([packages,distance,actual],i)=>{const r=Object.fromEntries(fields.map(k=>[k,numbers.includes(k)||k==='pressure'?null:'']));records.push({...r,id:uid(),demo:true,worker:'DEMO',date:`2026-11-${String(10+i).padStart(2,'0')}`,start:`2026-11-${String(10+i).padStart(2,'0')}T09:00`,end:`2026-11-${String(10+i).padStart(2,'0')}T15:00`,checkin:`2026-11-${String(10+i).padStart(2,'0')}T09:00`,finish:`2026-11-${String(10+i).padStart(2,'0')}T${String(9+Math.floor(actual/60)).padStart(2,'0')}:${String(actual%60).padStart(2,'0')}`,planned:360,pay:12000,extra:0,packages,distance,actual,pressure:Math.min(5,Math.max(1,Math.round(actual/100)))});});save();}showDemo=true;page('dashboard');};$('clearDemo').onclick=()=>{records=records.filter(r=>!r.demo);showDemo=false;save();manage();msg('架空データを削除しました。');};$('clearAll').onclick=()=>{if(confirm('Block記録と現場のノートをすべて削除します。CSVのバックアップは済んでいますか？')&&confirm('本当に削除しますか？元に戻せません。')){records=[];ideas=[];save();resetForm();resetIdea();manage();msg('すべてのデータを削除しました。');}};resetForm();
+
+// Fictional sample records, session-only, separated from research exports.
+
+const demoRows=[
+// block hours, assigned, actual minutes, pay, pins, completed, fuel, exception minutes, specified, returns, undelivered, km, premium
+[6,115,380,11100,91,111,800,40,9,3,1,86,'なし'],
+[4,80,225,7900,62,80,520,8,5,0,0,57,'なし'],
+[6,144,437,12000,120,132,1050,72,17,8,4,119,'あり'],
+[8,179,512,16000,147,173,1380,58,23,5,1,151,'なし'],
+[6,99,329,11700,79,99,690,21,6,0,0,73,'なし'],
+[4,95,286,8200,77,87,630,48,13,5,3,65,'あり'],
+[8,191,553,16100,156,173,1620,108,25,12,6,171,'なし'],
+[6,128,368,12400,105,122,810,33,12,4,2,96,'なし'],
+[6,108,334,12800,86,107,730,19,10,1,0,81,'あり'],
+[4,75,246,7900,61,71,530,27,8,3,1,59,'なし'],
+[8,170,481,16000,143,165,1270,51,22,3,2,145,'なし'],
+[6,137,421,12100,113,129,920,61,18,6,2,105,'あり']
+];
+const dayClock=(day,m)=>`${day}T${String(Math.floor(m/60)).padStart(2,'0')}:${String(m%60).padStart(2,'0')}`;
+records=demoRows.map(([hours,packages,actual,pay,pins,delivered,fuel,exceptionMinutes,specified,returned,undelivered,distance,premium],i)=>{
+ const day=`2026-11-${String(2+i).padStart(2,'0')}`;
+ const startMin=540+(i%3)*60;
+ const checkinMin=startMin-(i%4)*10;
+ const row={id:`fictional-block-${i+1}`,demo:true,worker:'DEMO',station:'架空ステーション',offer:dayClock(day,420),
+  start:dayClock(day,startMin),end:dayClock(day,startMin+hours*60),checkin:dayClock(day,checkinMin),
+  deliveryStart:dayClock(day,checkinMin+25),finish:dayClock(day,checkinMin+actual),
+  pay,extra:0,packages,pins,specified,premium,distance,fuel,exceptionMinutes,returned,undelivered,
+  redelivery:Math.max(0,returned+Math.floor(i/3)),countUnit:'packages',
+  exceptionReason:exceptionMinutes>45?'交通状況や再配達への対応（架空の例）':'',breakMins:0};
+ return derive(row);
+});
+// Demo Block input example (without a fictional-record listing).
+let previewing=false;
+const leavePreview=()=>{previewing=false;for(const f of all){const node=$(f[0]);if(node)node.disabled=false;}$('exceptionReason').disabled=false;$('saveRecord').disabled=false;resetForm();$('demoPreviewBanner').hidden=true;};
+const previewBlock=(r)=>{
+ if(previewing)leavePreview();
+ resetForm();autoCheckin=false;
+ for(const k of fields){const node=$(k);if(!node)continue;node.value=k==='blockDate'?(r.date||''):(['start','end','checkin','deliveryStart','finish'].includes(k)?(r[k]||'').slice(11,16):(r[k]??''));}
+ $('exceptionReason').value=r.exceptionReason||'';
+ live();
+ for(const f of all){const node=$(f[0]);if(node)node.disabled=true;}
+ $('exceptionReason').disabled=true;$('saveRecord').disabled=true;
+ previewing=true;$('demoPreviewBanner').hidden=false;
+ page('record');
+ window.scrollTo({top:0,behavior:'smooth'});
+};
+const banner=el('div','架空データの入力例を表示中です。編集・保存はできません。', 'notice');
+banner.id='demoPreviewBanner';banner.style.background='#fff4dd';banner.style.border='1px solid #e6c07a';banner.style.marginTop='12px';
+const clearBtn=el('button','入力例を閉じて空欄に戻す');clearBtn.type='button';clearBtn.style.marginLeft='12px';clearBtn.onclick=leavePreview;
+banner.append(clearBtn);$('recordForm').before(banner);
+showDemo=true;
+previewBlock(records.find(r=>r.demo));
+
+
+</script></body></html>
